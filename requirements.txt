@@ -1,0 +1,9 @@
+gradio
+numpy
+opencv-python
+paddleocr
+paddlepaddle
+pillow
+torch
+torchvision
+ultralytics

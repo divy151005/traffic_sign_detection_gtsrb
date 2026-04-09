@@ -28,6 +28,60 @@ The virtual environment uses `Python 3.8.0` and `tensorflow-gpu 2.2.0`. This env
 pip install -r requirements.txt
 ```
 
+## Animated UI
+
+This project now includes a polished local Gradio interface for the detection + OCR pipeline.
+
+Run it with:
+
+```bash
+./run_all.sh
+```
+
+Or explicitly:
+
+```bash
+./run_all.sh --ui
+```
+
+To keep using the terminal pipeline:
+
+```bash
+./run_all.sh --cli --image data/Test/7.png
+```
+
+The UI includes:
+
+- animated glassmorphism dashboard styling
+- image upload and YOLO confidence controls
+- annotated OCR preview overlays
+- cleaned OCR text and structured route output
+- downloadable JSON results for each run
+
+## Enhanced Pipeline Features
+
+The CLI/backend now includes:
+
+- multi-pass OCR on original, enhanced, and thresholded image variants
+- segmentation-assisted ROI refinement with masked, tight-crop, and rectified sign views
+- OCR + detection confidence fusion for stronger ranking
+- smarter structured entries with place, distance, and direction fields
+- dictionary-based correction for noisy place names
+- batch processing with folder input and `batch_summary.json`
+- low-confidence OCR noise filtering before final structuring
+- multilingual OCR lanes for English, Hindi, and optional Punjabi selection
+
+Examples:
+
+```bash
+./run_all.sh --cli --image data/Test/7.png
+./run_all.sh --cli --input-dir data/Test
+./run_all.sh --cli --image data/Test/7.png --extra-terms Delhi Panipat Karnal
+./run_all.sh --cli --image data/Test/7.png --ocr-langs en hi pa
+./run_all.sh --cli --image data/Test/7.png --segmentation-backend auto
+./run_all.sh --cli --image data/Test/7.png --disable-segmentation
+```
+
 ### Running on Cloud
 
 Hop on to the Colab Notebook [**here**](https://colab.research.google.com/drive/1oUwEiaBiWZlMpSrhoEvDg1Doc9sl36Fg?usp=sharing) without installing anything.

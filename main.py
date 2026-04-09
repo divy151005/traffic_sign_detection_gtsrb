@@ -1,967 +1,415 @@
-# #matplotlib inline
-# import os, glob
-
-# os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"   # Disable oneDNN logs
-
-# import tensorflow as tf
-
-# import numpy as np
-
-# import matplotlib.pyplot as plt
-# import cv2
-# from PIL import Image
-# import warnings
-# warnings.filterwarnings('ignore')
-# import tensorflow as tf 
-# from tensorflow.keras.utils import to_categorical
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import Conv2D, MaxPool2D, Dense, Flatten, Dropout
-# data_path = r'C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\\'
-# train_path = data_path + 'Train/'
-# test_path = data_path + 'Test/'
-# df_meta = pd.read_csv(data_path + 'Meta.csv')
-# df_train = pd.read_csv(data_path + 'Train.csv')
-# df_test = pd.read_csv(data_path + 'Test.csv')
-# df_train.head()
-# import argparse
-
-# # inference_vscode.py
-# import os
-# import numpy as np
-# import cv2
-# import tensorflow as tf
-# # Load metadata
-# import csv
-# print(tf.__file__)
-# print(dir(tf))
-# from tensorflow.keras.models import load_model
-
-# # Suppress TensorFlow warnings & oneDNN logs
-# os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-
-# # -----------------------------
-# # 1. Load trained model
-# # -----------------------------
-# MODEL_PATH = r"C:\Users\GURPREET\Desktop\damn\traffic_sign_detection_gtsrb\models\traffic_sign_detection_gtsrb.h5"   # Path to your saved model
-# model = load_model(MODEL_PATH)
-# print("[INFO] Model loaded successfully!")
-# print("[DEBUG] Model output layer units:", model.output_shape)
-# # Define class names (0-42 for GTSRB)
-# # -----------------------------
-# # 1.1 Define class names (14 classes)
-# # -----------------------------
-
-
-# # data_path = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\\"
-
-# # with open(data_path + "Meta.csv", newline='', encoding='utf-8') as csvfile:
-# #     reader = csv.DictReader(csvfile)
-# #     print("[DEBUG] CSV fieldnames:", reader.fieldnames)  # 👈 print headers
-
-
-# # data_path = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\\"
-# # id_to_sign = {}
-
-# # with open(data_path + "Meta.csv", newline='', encoding='utf-8') as csvfile:
-# #     reader = csv.DictReader(csvfile)
-# #     for row in reader:
-# #         id_to_sign[int(row["ClassId"])] = row["SignId"]
-# # class_names = [id_to_sign[i] for i in range(len(id_to_sign))]
-# # print(f"[INFO] Loaded {len(class_names)} class names")
-
-# # Load class names from Meta.csv
-# # data_path = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\\"
-# # class_names = []
-
-# # with open(data_path + "Meta.csv", newline='', encoding='utf-8') as csvfile:
-# #     reader = csv.DictReader(csvfile)
-# #     rows = sorted(reader, key=lambda row: int(row["ClassId"]))
-# #     class_names = [row["SignID"] for row in rows]
-
-# # print(f"[INFO] Loaded {len(class_names)} class names")
-
-
-
-
-# class_names = [
-#     "Speed limit (20km/h)",        # 0
-#     "Speed limit (30km/h)",        # 1
-#     "Speed limit (50km/h)",        # 2
-#     "Speed limit (60km/h)",        # 3
-#     "Speed limit (70km/h)",        # 4
-#     "Speed limit (80km/h)",        # 5
-#     "End of speed limit (80km/h)", # 6
-#     "Speed limit (100km/h)",       # 7
-#     "Speed limit (120km/h)",       # 8
-#     "No passing",                  # 9
-#     "No passing for vehicles over 3.5 metric tons", # 10
-#     "Right-of-way at the next intersection",        # 11
-#     "Priority road",               # 12
-#     "Yield",                       # 13
-#     "Stop",                        # 14
-#     "No vehicles",                 # 15
-#     "Vehicles over 3.5 metric tons prohibited",     # 16
-#     "No entry",                    # 17
-#     "General caution",              # 18
-#     "Dangerous curve to the left", # 19
-#     "Dangerous curve to the right",# 20
-#     "Double curve",                # 21
-#     "Bumpy road",                  # 22
-#     "Slippery road",               # 23
-#     "Road narrows on the right",   # 24
-#     "Road work",                   # 25
-#     "Traffic signals",             # 26
-#     "Pedestrians",                 # 27
-#     "Children crossing",           # 28
-#     "Bicycles crossing",           # 29
-#     "Beware of ice/snow",          # 30
-#     "Wild animals crossing",       # 31
-#     "End of all speed and passing limits", # 32
-#     "Turn right ahead",            # 33
-#     "Turn left ahead",             # 34
-#     "Ahead only",                  # 35
-#     "Go straight or right",        # 36
-#     "Go straight or left",         # 37
-#     "Keep right",                  # 38
-#     "Keep left",                   # 39
-#     "Roundabout mandatory",        # 40
-#     "End of no passing",           # 41
-#     "End of no passing by vehicles over 3.5 metric tons" # 42
-# ]
-
-# # -----------------------------
-# # 2. Define helper function
-# # -----------------------------
-# def preprocess_image(img_path, target_size=(32, 32)):
-#     """
-#     Preprocess image for prediction
-#     - Reads image
-#     - Resizes
-#     - Normalizes
-#     """
-#     img = cv2.imread(img_path)
-#     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Convert BGR -> RGB
-#     img = cv2.resize(img, target_size)
-#     img = img.astype("float32") / 255.0
-#     img = np.expand_dims(img, axis=0)  # Add batch dimension
-#     return img
-
-# def predict_image(img_path):
-#     """
-#     Predict traffic sign class for a single image
-#     """
-#     img = preprocess_image(img_path)
-#     preds = model.predict(img)
-#     class_id = np.argmax(preds, axis=1)[0]
-#     confidence = np.max(preds)
-#     return class_id, confidence
-
-# # -----------------------------
-# # 3. Test the script
-# # -----------------------------
-# if __name__ == "__main__":
-#     # Example test image (replace with your actual test path)
-#     test_image_path = "D:\traffic_sign_detection_gtsrb\data\Test\00009.png"   # Stop sign
-#     class_id, confidence = predict_image(test_image_path)
-
-#     print(f"[RESULT] Predicted Class ID: {class_id}, Confidence: {confidence:.2f}")
-#     print(f"[RESULT] Predicted Class ID: {class_id}, "
-#           f"Label: {class_names[class_id]}, "
-#           f"Confidence: {confidence:.2f}")
-
-
-
-
-
-
-
-
-# # -----------------------------
-# # Traffic Sign Detection - Inference Script
-# # -----------------------------
-
-# import os
-# import glob
-# import numpy as np
-# import cv2
-# import tensorflow as tf
-# from tensorflow.keras.models import load_model
-
-# # -----------------------------
-# # 1. Suppress TensorFlow warnings
-# # -----------------------------
-# os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-
-# # -----------------------------
-# # 2. Load trained model
-# # -----------------------------
-# MODEL_PATH = r"C:\Users\GURPREET\Desktop\damn\traffic_sign_detection_gtsrb\models\traffic_sign_detection_gtsrb.h5"
-# if not os.path.exists(MODEL_PATH):
-#     raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
-
-# model = load_model(MODEL_PATH)
-# print("[INFO] Model loaded successfully!")
-
-# # -----------------------------
-# # 3. Define 43 GTSRB class names
-# # -----------------------------
-# class_names = [
-#     "Speed limit (20km/h)", "Speed limit (30km/h)", "Speed limit (50km/h)", "Speed limit (60km/h)",
-#     "Speed limit (70km/h)", "Speed limit (80km/h)", "End of speed limit (80km/h)", "Speed limit (100km/h)",
-#     "Speed limit (120km/h)", "No passing", "No passing for vehicles over 3.5 metric tons",
-#     "Right-of-way at the next intersection", "Priority road", "Yield", "Stop", "No vehicles",
-#     "Vehicles over 3.5 metric tons prohibited", "No entry", "General caution", "Dangerous curve to the left",
-#     "Dangerous curve to the right", "Double curve", "Bumpy road", "Slippery road", "Road narrows on the right",
-#     "Road work", "Traffic signals", "Pedestrians", "Children crossing", "Bicycles crossing", "Beware of ice/snow",
-#     "Wild animals crossing", "End of all speed and passing limits", "Turn right ahead", "Turn left ahead",
-#     "Ahead only", "Go straight or right", "Go straight or left", "Keep right", "Keep left", "Roundabout mandatory",
-#     "End of no passing", "End of no passing by vehicles over 3.5 metric tons"
-# ]
-
-# # -----------------------------
-# # 4. Helper functions
-# # -----------------------------
-# def preprocess_image(img_path, target_size=(32, 32)):
-#     """
-#     Reads, resizes, normalizes, and adds batch dimension to an image
-#     """
-#     print(f"[DEBUG] Loading image: {img_path}")
-#     img = cv2.imread(img_path)
-#     if img is None:
-#         raise FileNotFoundError(f"[ERROR] Could not load image at {img_path}. "
-#                                 "Check file path and extension.")
-#     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-#     img = cv2.resize(img, target_size)
-#     img = img.astype("float32") / 255.0
-#     img = np.expand_dims(img, axis=0)
-#     return img
-
-# def predict_image(img_path):
-#     """
-#     Predicts class ID and confidence for a single image
-#     """
-#     img = preprocess_image(img_path)
-#     preds = model.predict(img)
-#     class_id = int(np.argmax(preds, axis=1)[0])
-#     confidence = float(np.max(preds))
-#     return class_id, confidence
-
-# # -----------------------------
-# # 5. Select a test image automatically
-# # -----------------------------
-# TEST_FOLDER = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\Test\*"
-# test_images = glob.glob(TEST_FOLDER)
-# if len(test_images) == 0:
-#     raise FileNotFoundError(f"No test images found in folder: {TEST_FOLDER}")
-
-# test_image_path = test_images[0]  # pick the first image
-# print(f"[INFO] Using test image: {test_image_path}")
-
-# # -----------------------------
-# # 6. Run prediction
-# # -----------------------------
-# class_id, confidence = predict_image(test_image_path)
-# print(f"[RESULT] Predicted Class ID: {class_id}, "
-#       f"Label: {class_names[class_id]}, "
-#       f"Confidence: {confidence*100:.2f}%")
-
-# # -----------------------------
-# # 7. Display the image with prediction
-# # -----------------------------
-# img = cv2.imread(test_image_path)
-# if img is None:
-#     raise FileNotFoundError(f"Could not load image for display: {test_image_path}")
-
-# # Prepare label text with class name and confidence %
-# label_text = f"{class_names[class_id]} ({confidence*100:.2f}%)"
-
-# # Draw label on the image
-# cv2.putText(img, label_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-#             0.8, (0, 255, 0), 2)
-
-# # Optional: resize image for better display
-# img_display = cv2.resize(img, (1000, 1000))
-
-# # Show image in a window
-# cv2.imshow("Prediction", img_display)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# # -----------------------------
-# # Traffic Sign Detection - Inference
-# # -----------------------------
-
-# import os
-# import glob
-# import numpy as np
-# import cv2
-# import tensorflow as tf
-# from tensorflow.keras.models import load_model
-
-# # -----------------------------
-# # 1. Suppress TensorFlow warnings
-# # -----------------------------
-# os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-
-# # -----------------------------
-# # 2. Load trained model
-# # -----------------------------
-# MODEL_PATH = r"C:\Users\GURPREET\Desktop\damn\traffic_sign_detection_gtsrb\models\traffic_sign_detection_gtsrb.h5"
-# if not os.path.exists(MODEL_PATH):
-#     raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
-
-# model = load_model(MODEL_PATH)
-# print("[INFO] Model loaded successfully!")
-
-# # -----------------------------
-# # 3. Define 43 GTSRB class names
-# # -----------------------------
-# class_names = [
-#     "Speed limit (20km/h)", "Speed limit (30km/h)", "Speed limit (50km/h)", "Speed limit (60km/h)",
-#     "Speed limit (70km/h)", "Speed limit (80km/h)", "End of speed limit (80km/h)", "Speed limit (100km/h)",
-#     "Speed limit (120km/h)", "No passing", "No passing for vehicles over 3.5 metric tons",
-#     "Right-of-way at the next intersection", "Priority road", "Yield", "Stop", "No vehicles",
-#     "Vehicles over 3.5 metric tons prohibited", "No entry", "General caution", "Dangerous curve to the left",
-#     "Dangerous curve to the right", "Double curve", "Bumpy road", "Slippery road", "Road narrows on the right",
-#     "Road work", "Traffic signals", "Pedestrians", "Children crossing", "Bicycles crossing", "Beware of ice/snow",
-#     "Wild animals crossing", "End of all speed and passing limits", "Turn right ahead", "Turn left ahead",
-#     "Ahead only", "Go straight or right", "Go straight or left", "Keep right", "Keep left", "Roundabout mandatory",
-#     "End of no passing", "End of no passing by vehicles over 3.5 metric tons"
-# ]
-
-# # -----------------------------
-# # 4. Helper functions
-# # -----------------------------
-# def preprocess_image(img_path, target_size=(32, 32)):
-#     """
-#     Read, resize, normalize, and add batch dimension
-#     """
-#     print(f"[DEBUG] Loading image: {img_path}")
-#     img = cv2.imread(img_path)
-#     if img is None:
-#         raise FileNotFoundError(f"[ERROR] Could not load image at {img_path}. "
-#                                 "Check file path and extension.")
-#     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-#     img = cv2.resize(img, target_size)
-#     img = img.astype("float32") / 255.0
-#     img = np.expand_dims(img, axis=0)
-#     return img
-
-# def predict_image(img_path):
-#     """
-#     Predict class ID and confidence for a single image
-#     """
-#     img = preprocess_image(img_path)
-#     preds = model.predict(img)
-#     class_id = int(np.argmax(preds, axis=1)[0])
-#     confidence = float(np.max(preds))
-#     return class_id, confidence
-
-# # -----------------------------
-# # 5. Select a test image automatically
-# # -----------------------------
-# TEST_FOLDER = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\Test\*"
-# test_images = glob.glob(TEST_FOLDER)
-# if len(test_images) == 0:
-#     raise FileNotFoundError(f"No test images found in folder: {TEST_FOLDER}")
-
-# test_image_path = test_images[22]  # pick the first image
-# print(f"[INFO] Using test image: {test_image_path}")
-
-# # -----------------------------
-# # 6. Run prediction
-# # -----------------------------
-# class_id, confidence = predict_image(test_image_path)
-# print(f"[RESULT] Predicted Class ID: {class_id}, "
-#       f"Label: {class_names[class_id]}, "
-#       f"Confidence: {confidence*100:.2f}%")
-
-
-
-
-
-
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WRONG CODE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!# # -----------------------------
-# # Traffic Sign Detection - Batch Inference and Evaluation
-# import os
-# import cv2
-# import numpy as np
-# import pandas as pd
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# from tensorflow.keras.models import load_model
-# from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay
-
-# # -----------------------------
-# # 0. Suppress TensorFlow warnings
-# # -----------------------------
-# os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-
-# # -----------------------------
-# # 1. Load trained model
-# # -----------------------------
-# MODEL_PATH = r"C:\Users\GURPREET\Desktop\damn\traffic_sign_detection_gtsrb\models\traffic_sign_detection_gtsrb.h5"
-# if not os.path.exists(MODEL_PATH):
-#     raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
-
-# model = load_model(MODEL_PATH)
-# print("[INFO] Model loaded successfully!")
-
-# # -----------------------------
-# # 2. Load training CSV
-# # -----------------------------
-# TRAIN_CSV = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\Train.csv"
-# df_train = pd.read_csv(TRAIN_CSV)
-# print(f"[INFO] Total training images: {len(df_train)}")
-
-# # -----------------------------
-# # 3. Load or Fix Test CSV Automatically
-# # -----------------------------
-# TEST_CSV = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\Test.csv"
-# TEST_DIR = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\Test"
-
-# if not os.path.exists(TEST_CSV):
-#     print("[WARNING] Test.csv not found! Generating automatically...")
-#     data = []
-#     subfolders = [f for f in os.listdir(TEST_DIR) if os.path.isdir(os.path.join(TEST_DIR, f))]
-#     if subfolders:
-#         # Folder-based structure (Test/0/, Test/1/, ...)
-#         for class_id in subfolders:
-#             class_folder = os.path.join(TEST_DIR, class_id)
-#             for img_name in os.listdir(class_folder):
-#                 if img_name.lower().endswith(('.png', '.jpg', '.jpeg')):
-#                     data.append([os.path.join(TEST_DIR, class_id, img_name), int(class_id)])
-#         df_test = pd.DataFrame(data, columns=["Path", "ClassId"])
-#     else:
-#         # Flat structure (official GTSRB)
-#         images = [f for f in os.listdir(TEST_DIR) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-#         df_test = pd.DataFrame({"Path": [os.path.join(TEST_DIR, img) for img in images]})
-#         df_test["ClassId"] = 0  # placeholder
-#     df_test.to_csv(TEST_CSV, index=False)
-#     print(f"[INFO] Test.csv created successfully at: {TEST_CSV}")
-
-# else:
-#     df_test = pd.read_csv(TEST_CSV)
-#     print("[INFO] Loaded existing Test.csv")
-
-# # ------------------------------------------------
-# # Fix inconsistent path formats automatically
-# # ------------------------------------------------
-# def fix_test_path(x):
-#     if os.path.exists(x):
-#         return x
-#     filename = os.path.basename(x)
-#     full_path = os.path.join(TEST_DIR, filename)
-#     if os.path.exists(full_path):
-#         return full_path
-#     parts = x.replace("\\", "/").split("/")
-#     if len(parts) >= 2 and parts[-2].isdigit():
-#         class_id = parts[-2]
-#         full_path = os.path.join(TEST_DIR, class_id, parts[-1])
-#         if os.path.exists(full_path):
-#             return full_path
-#     return x
-
-# df_test["Path"] = df_test["Path"].apply(fix_test_path)
-
-# print("\n[DEBUG] Sample test paths after auto-fix:")
-# print(df_test.sample(5))
-# print(f"[INFO] Total test images detected: {len(df_test)}")
-
-# # -----------------------------
-# # 4. Define 43 GTSRB class names
-# # -----------------------------
-# class_names = [
-#     "Speed limit (20km/h)", "Speed limit (30km/h)", "Speed limit (50km/h)", "Speed limit (60km/h)",
-#     "Speed limit (70km/h)", "Speed limit (80km/h)", "End of speed limit (80km/h)", "Speed limit (100km/h)",
-#     "Speed limit (120km/h)", "No passing", "No passing for vehicles over 3.5 metric tons",
-#     "Right-of-way at the next intersection", "Priority road", "Yield", "Stop", "No vehicles",
-#     "Vehicles over 3.5 metric tons prohibited", "No entry", "General caution", "Dangerous curve to the left",
-#     "Dangerous curve to the right", "Double curve", "Bumpy road", "Slippery road", "Road narrows on the right",
-#     "Road work", "Traffic signals", "Pedestrians", "Children crossing", "Bicycles crossing", "Beware of ice/snow",
-#     "Wild animals crossing", "End of all speed and passing limits", "Turn right ahead", "Turn left ahead",
-#     "Ahead only", "Go straight or right", "Go straight or left", "Keep right", "Keep left", "Roundabout mandatory",
-#     "End of no passing", "End of no passing by vehicles over 3.5 metric tons"
-# ]
-
-# # -----------------------------
-# # 5. Load and preprocess test images
-# # -----------------------------
-# def load_and_preprocess(img_path, target_size=(32, 32)):
-#     img = cv2.imread(img_path)
-#     if img is None:
-#         raise FileNotFoundError(f"Image not found: {img_path}")
-#     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-#     img = cv2.resize(img, target_size)
-#     img = img.astype("float32") / 255.0
-#     return img
-
-# images, y_true = [], []
-
-# for idx, row in df_test.iterrows():
-#     try:
-#         img = load_and_preprocess(row['Path'])
-#         images.append(img)
-#         y_true.append(int(row['ClassId']))
-#     except FileNotFoundError:
-#         print(f"[WARNING] Missing image: {row['Path']}")
-
-# images = np.array(images)
-# y_true = np.array(y_true)
-# print(f"[INFO] Loaded {len(images)} images for testing.")
-
-# # -----------------------------
-# # 6. Run batch prediction
-# # -----------------------------
-# preds = model.predict(images, batch_size=64, verbose=1)
-# y_pred = np.argmax(preds, axis=1)
-
-# # -----------------------------
-# # 7. Calculate accuracy
-# # -----------------------------
-# accuracy = (y_pred == y_true).mean() * 100
-# print(f"\n[RESULT] Model Accuracy on Test Set: {accuracy:.2f}%")
-
-# # -----------------------------
-# # 8. Confusion Matrix
-# # -----------------------------
-# plt.figure(figsize=(15, 12))
-# ConfusionMatrixDisplay.from_predictions(
-#     y_true, y_pred, display_labels=range(43),
-#     cmap='coolwarm', normalize='true', xticks_rotation=90
-# )
-# plt.title("Normalized Confusion Matrix - Traffic Sign Recognition (GTSRB)")
-# plt.show()
-
-# # -----------------------------
-# # 9. Classification Report
-# # -----------------------------
-# print("\nDetailed Classification Report:\n")
-# print(classification_report(y_true, y_pred, target_names=class_names))
-
-
-
-import os
-import cv2
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-from tensorflow.keras.models import load_model
-from sklearn.metrics import confusion_matrix, classification_report
-import tensorflow as tf
-
-# -----------------------------
-# 0. Environment Setup
-# -----------------------------
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-
-# Ensure GPU memory growth (optional but recommended)
-gpus = tf.config.list_physical_devices('GPU')
-if gpus:
-    try:
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
-        print("[INFO] GPU memory growth enabled.")
-    except Exception as e:
-        print("[WARNING] Could not set memory growth:", e)
-
-# -----------------------------
-# 1. Load trained model
-# -----------------------------
-MODEL_PATH = r"D:\CGC\PHD\conf\paper\traffic_sign_detection_gtsrb\models\resnet_finetuned.h5"
-if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
-
-model = load_model(MODEL_PATH)
-print("[INFO] Model loaded successfully!")
-
-# -----------------------------
-# 2. Load training CSV
-# -----------------------------
-TRAIN_CSV = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\Train.csv"
-df_train = pd.read_csv(TRAIN_CSV)
-num_train_images = len(df_train)
-print(f"[INFO] Total training images: {num_train_images}")
-
-# -----------------------------
-# 3. Load or Generate Test CSV
-# -----------------------------
-TEST_CSV = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\Test.csv"
-TEST_DIR = r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive\Test"
-
-if not os.path.exists(TEST_CSV):
-    print("[WARNING] Test.csv not found! Generating automatically...")
-    data = []
-    for class_id in os.listdir(TEST_DIR):
-        class_folder = os.path.join(TEST_DIR, class_id)
-        if os.path.isdir(class_folder):
-            for img_name in os.listdir(class_folder):
-                if img_name.lower().endswith(('.png', '.jpg', '.jpeg')):
-                    img_path = os.path.join("Test", class_id, img_name)
-                    data.append([img_path, int(class_id)])
-    df_test = pd.DataFrame(data, columns=["Path", "ClassId"])
-    df_test.to_csv(TEST_CSV, index=False)
-    print(f"[INFO] Test.csv created successfully at: {TEST_CSV}")
-else:
-    df_test = pd.read_csv(TEST_CSV)
-    print("[INFO] Loaded existing Test.csv")
-
-# Fix relative paths if needed
-df_test['Path'] = df_test['Path'].apply(lambda x: os.path.join(
-    r"C:\Users\GURPREET\Desktop\traffic_sign_detection_gtsrb\archive", x))
-
-num_test_images = len(df_test)
-print(f"[INFO] Total test images: {num_test_images}")
-
-# -----------------------------
-# 4. Define 43 GTSRB class names
-# -----------------------------
-class_names = [
-    "Speed limit (20km/h)", "Speed limit (30km/h)", "Speed limit (50km/h)", "Speed limit (60km/h)",
-    "Speed limit (70km/h)", "Speed limit (80km/h)", "End of speed limit (80km/h)", "Speed limit (100km/h)",
-    "Speed limit (120km/h)", "No passing", "No passing for vehicles over 3.5 metric tons",
-    "Right-of-way at the next intersection", "Priority road", "Yield", "Stop", "No vehicles",
-    "Vehicles over 3.5 metric tons prohibited", "No entry", "General caution", "Dangerous curve to the left",
-    "Dangerous curve to the right", "Double curve", "Bumpy road", "Slippery road", "Road narrows on the right",
-    "Road work", "Traffic signals", "Pedestrians", "Children crossing", "Bicycles crossing", "Beware of ice/snow",
-    "Wild animals crossing", "End of all speed and passing limits", "Turn right ahead", "Turn left ahead",
-    "Ahead only", "Go straight or right", "Go straight or left", "Keep right", "Keep left", "Roundabout mandatory",
-    "End of no passing", "End of no passing by vehicles over 3.5 metric tons"
-]
-
-# -----------------------------
-# 5. Load and preprocess test images
-# -----------------------------
-def load_and_preprocess(img_path, target_size=(96, 96)):
-    img = cv2.imread(img_path)
-    if img is None:
-        raise FileNotFoundError(f"Image not found: {img_path}")
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img = cv2.resize(img, target_size)
-    img = img.astype("float32") / 255.0
-    return img
-
-images, y_true = [], []
-
-print("[INFO] Loading and preprocessing test images...")
-for idx, row in tqdm(df_test.iterrows(), total=len(df_test), desc="Processing"):
-    try:
-        img = load_and_preprocess(row['Path'])
-        images.append(img)
-        y_true.append(int(row['ClassId']))
-    except FileNotFoundError:
-        print(f"[WARNING] Missing image: {row['Path']}")
-
-images = np.array(images)
-y_true = np.array(y_true)
-print(f"[INFO] Loaded {len(images)} valid test images.")
-
-# -----------------------------
-# 6. Run batch prediction
-# -----------------------------
-print("[INFO] Running model inference...")
-preds = model.predict(images, batch_size=64, verbose=1)
-y_pred = np.argmax(preds, axis=1)
-
-# -----------------------------
-# 7. Accuracy Calculation
-# -----------------------------
-accuracy = (y_pred == y_true).mean() * 100
-print(f"\n✅ [RESULT] Model Accuracy on Test Set: {accuracy:.2f}%")
-
-# -----------------------------
-# 8. Confusion Matrix Visualization
-# -----------------------------
-cm = confusion_matrix(y_true, y_pred)
-plt.figure(figsize=(15, 12))
-sns.heatmap(cm, annot=False, fmt='d', cmap='coolwarm')
-plt.xlabel("Predicted Class")
-plt.ylabel("True Class")
-plt.title("Confusion Matrix - Traffic Sign Recognition")
-plt.tight_layout()
-plt.show()
-
-# -----------------------------
-# 9. Classification Report
-# -----------------------------
-print("\n📊 Detailed Classification Report:\n")
-print(classification_report(y_true, y_pred, target_names=class_names))
-
-# -----------------------------
-# 10. Save Predictions to CSV
-# -----------------------------
-output_df = pd.DataFrame({
-    "Path": df_test["Path"][:len(y_pred)],
-    "True_Label": y_true,
-    "Predicted_Label": y_pred,
-    "Predicted_Class_Name": [class_names[i] for i in y_pred]
-})
-output_path = "test_predictions.csv"
-output_df.to_csv(output_path, index=False)
-print(f"[INFO] Predictions saved to: {os.path.abspath(output_path)}")
-
-
-
-
-
-
-model = load_model(MODEL_PATH)
-print("[INFO] Model loaded successfully!")
-
-
-
-
-
-
-
-
-
-
-# import os
-# import cv2
-# import numpy as np
-# import pandas as pd
-# from tqdm import tqdm
-# import matplotlib.pyplot as plt
-# from tensorflow.keras.models import load_model
-# from sklearn.metrics import classification_report, confusion_matrix
-# import seaborn as sns
-
-# # -----------------------------
-# # 0. Suppress TensorFlow warnings
-# # -----------------------------
-# os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-
-# # -----------------------------
-# # 1. Define paths
-# # -----------------------------
-# BASE_DIR = r"d:\CGC\PHD\conf\paper\traffic_sign_detection_gtsrb"
-# DATA_DIR = os.path.join(BASE_DIR, "data")
-# MODEL_DIR = os.path.join(BASE_DIR, "models")
-# OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
-
-# TEST_CSV = os.path.join(DATA_DIR, "Test", "Test.csv")
-# MODEL_PATH = os.path.join(MODEL_DIR, "resnet_model.h5")
-
-# os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-# # -----------------------------
-# # 2. Check important files
-# # -----------------------------
-# if not os.path.exists(TEST_CSV):
-#     raise FileNotFoundError(f"❌ Test.csv not found at {TEST_CSV}")
-
-# if not os.path.exists(MODEL_PATH):
-#     raise FileNotFoundError(f"❌ Model not found at {MODEL_PATH}")
-
-# print("✅ All paths verified.")
-
-# # -----------------------------
-# # 3. Constants
-# # -----------------------------
-# IMG_SIZE = (96, 96)     # MUST match training input
-# BATCH_SIZE = 32
-
-# # -----------------------------
-# # 4. Load model
-# # -----------------------------
-# print("\n🧠 Loading trained model...")
-# model = load_model(MODEL_PATH)
-# print("✅ Model loaded successfully!")
-
-# # -----------------------------
-# # 5. Load test data paths
-# # -----------------------------
-# print("\n📂 Loading test image paths...")
-# df_test = pd.read_csv(TEST_CSV)
-# X_paths = df_test["Path"].values
-# y_true = df_test["ClassId"].values
-
-# print(f"✅ Found {len(X_paths)} test images.")
-
-# # -----------------------------
-# # 6. Memory-efficient batch prediction
-# # -----------------------------
-# def preprocess_image(img_path):
-#     """Preprocess a single image for prediction."""
-#     img = cv2.imread(img_path)
-#     if img is None:
-#         raise ValueError(f"Image not found: {img_path}")
-#     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-#     img = cv2.resize(img, IMG_SIZE)
-#     img = img.astype(np.float32) / 255.0
-#     return img
-
-# def predict_in_batches(model, X_paths, batch_size):
-#     """Predict in batches to avoid memory overflow."""
-#     preds = []
-#     print("\n🧠 Running memory-efficient prediction...")
-#     for i in tqdm(range(0, len(X_paths), batch_size), desc="🚀 Predicting", ncols=100):
-#         batch_paths = X_paths[i:i+batch_size]
-#         batch_imgs = [preprocess_image(p) for p in batch_paths]
-#         batch_imgs = np.array(batch_imgs, dtype=np.float32)
-#         batch_pred = model.predict(batch_imgs, verbose=0)
-#         preds.extend(np.argmax(batch_pred, axis=1))
-#     return np.array(preds)
-
-# # -----------------------------
-# # 7. Run prediction
-# # -----------------------------
-# y_pred = predict_in_batches(model, X_paths, BATCH_SIZE)
-# print("\n✅ Prediction complete!")
-
-# # -----------------------------
-# # 8. Evaluation
-# # -----------------------------
-# acc = np.mean(y_pred == y_true)
-# print(f"\n🎯 Test Accuracy: {acc * 100:.2f}%")
-
-# print("\n📊 Classification Report:")
-# print(classification_report(y_true, y_pred, zero_division=0))
-
-# # -----------------------------
-# # 9. Confusion Matrix
-# # -----------------------------
-# print("\n📈 Generating confusion matrix...")
-# cm = confusion_matrix(y_true, y_pred)
-# plt.figure(figsize=(16, 12))
-# sns.heatmap(cm, annot=False, cmap="viridis")
-# plt.title("Traffic Sign Recognition - Confusion Matrix", fontsize=16)
-# plt.xlabel("Predicted Label")
-# plt.ylabel("True Label")
-# plt.tight_layout()
-# plt.savefig(os.path.join(OUTPUT_DIR, "confusion_matrix.png"))
-# plt.close()
-# print(f"✅ Confusion matrix saved at {OUTPUT_DIR}\\confusion_matrix.png")
-
-# # -----------------------------
-# # 10. Save Results
-# # -----------------------------
-# results_df = pd.DataFrame({
-#     "ImagePath": X_paths,
-#     "TrueLabel": y_true,
-#     "PredictedLabel": y_pred
-# })
-# results_path = os.path.join(OUTPUT_DIR, "test_predictions.csv")
-# results_df.to_csv(results_path, index=False)
-# print(f"✅ Predictions saved at {results_path}")
-
-# print("\n🎉 Evaluation Complete — Model Performance Summary Ready!")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# # -----------------------------
-# # 1B. Save Model Summary & Architecture
-# # -----------------------------
-# from tensorflow.keras.utils import plot_model
-# from contextlib import redirect_stdout
-
-# # 1️⃣ Print model summary in console
-# print("\n📘 Model Architecture Summary:\n")
-# model.summary()
-
-# # 2️⃣ Save model summary to text file
-# summary_path = "model_summary.txt"
-# with open(summary_path, "w") as f:
-#     with redirect_stdout(f):
-#         model.summary()
-# print(f"[INFO] Model summary saved to: {os.path.abspath(summary_path)}")
-
-# # 3️⃣ Save model architecture diagram
-# plot_model(model, to_file="model_structure.png", show_shapes=True, show_layer_names=True)
-# print("[INFO] Model architecture diagram saved as: model_structure.png")
+"""OCR-primary traffic guide sign recognition pipeline."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional
+
+from detection import YoloTrafficSignDetector, crop_roi
+from ocr import DEFAULT_DET_MODEL_DIR, DEFAULT_REC_MODEL_DIR, PaddleGuideSignOCR, load_image
+from segmentation import SignSegmenter, refine_segmented_roi
+from text_processing import StructuredTextResult, structure_guide_sign_text
+
+BASE_DIR = Path(__file__).resolve().parent
+DEFAULT_IMAGE_PATH = BASE_DIR / "data" /  "Test" /"7.png"
+DEFAULT_OUTPUT_DIR = BASE_DIR / "outputs" / "ocr_primary"
+DEFAULT_YOLO_MODEL = BASE_DIR / "models" / "yolov8_traffic_sign_board.pt"
+DEFAULT_OCR_DET_DIR = DEFAULT_DET_MODEL_DIR
+DEFAULT_OCR_REC_DIR = DEFAULT_REC_MODEL_DIR
+DEFAULT_OCR_CLS_DIR = BASE_DIR / "models" / "paddleocr" / "cls"
+DEFAULT_SEGMENTATION_BACKEND = "classical"
+SUPPORTED_IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"}
+
+
+def ensure_dir(path: str | Path) -> Path:
+    target = Path(path)
+    target.mkdir(parents=True, exist_ok=True)
+    return target
+
+
+def parse_ocr_langs(value: Optional[Iterable[str] | str]) -> List[str]:
+    if value is None:
+        return ["en", "hi", "ch"]
+    if isinstance(value, str):
+        parts = value.split(",")
+    else:
+        parts = list(value)
+    langs = [str(part).strip().lower() for part in parts if str(part).strip()]
+    return langs or ["en", "hi", "ch"]
+
+
+def compute_fused_confidence(ocr_confidence: float, detection_confidence: Optional[float]) -> float:
+    if detection_confidence is None:
+        return ocr_confidence
+    return round((0.65 * float(ocr_confidence)) + (0.35 * float(detection_confidence)), 4)
+
+
+def should_segment_detection(roi_image, detection_label: str) -> bool:
+    height, width = roi_image.shape[:2]
+    if height <= 0 or width <= 0:
+        return False
+
+    area = height * width
+    aspect_ratio = width / max(height, 1)
+    label_text = str(detection_label).lower()
+
+    board_keywords = ("board", "guide", "destination", "text", "overhead", "signboard")
+    if any(keyword in label_text for keyword in board_keywords):
+        return True
+
+    if area < 12_000:
+        return False
+
+    # Destination boards are typically wider than symbol-centric traffic signs.
+    if aspect_ratio >= 1.35:
+        return True
+
+    # Tall portrait signs sometimes contain stacked text, but squares and circles usually do not.
+    if aspect_ratio <= 0.72 and area >= 28_000:
+        return True
+
+    return False
+
+
+def _roi_items_to_dicts(
+    roi_items: Iterable[object],
+    left: int = 0,
+    top: int = 0,
+    detection_label: str = "full_image",
+    detection_confidence: Optional[float] = None,
+    roi_variant: str = "detector_roi",
+    segmentation_backend: Optional[str] = None,
+    segmentation_confidence: Optional[float] = None,
+) -> List[Dict[str, object]]:
+    output: List[Dict[str, object]] = []
+    for item in roi_items:
+        confidence = float(item.confidence)
+        output.append(
+            {
+                "text": item.text,
+                "confidence": confidence,
+                "fused_confidence": compute_fused_confidence(confidence, detection_confidence),
+                "detection_confidence": detection_confidence,
+                "detection_label": detection_label,
+                "ocr_source": getattr(item, "source", "original"),
+                "ocr_source_count": getattr(item, "source_count", 1),
+                "ocr_language": getattr(item, "language", "ch"),
+                "roi_variant": roi_variant,
+                "segmentation_backend": segmentation_backend,
+                "segmentation_confidence": segmentation_confidence,
+                "box": [[point[0] + left, point[1] + top] for point in item.box],
+                "x_center": item.x_center + left,
+                "y_center": item.y_center + top,
+            }
+        )
+    return output
+
+
+def _retag_ocr_items(roi_items: Iterable[object], prefix: str) -> List[object]:
+    for item in roi_items:
+        source = getattr(item, "source", "original")
+        item.source = f"{prefix}:{source}"
+    return list(roi_items)
+
+
+def run_ocr_for_variant(ocr_engine: PaddleGuideSignOCR, image, fast_mode: bool):
+    return ocr_engine.run_raw_ocr_fast(image) if fast_mode else ocr_engine.run_raw_ocr(image)
+
+
+def collect_ocr_candidates(
+    image_path: str,
+    yolo_model_path: Optional[str],
+    yolo_conf: float,
+    ocr_engine: PaddleGuideSignOCR,
+    use_segmentation: bool = True,
+    segmentation_backend: str = DEFAULT_SEGMENTATION_BACKEND,
+    yolo_seg_model_path: Optional[str] = None,
+    fast_mode: bool = True,
+) -> List[Dict[str, object]]:
+    image = load_image(image_path)
+    raw_items: List[Dict[str, object]] = []
+    segmenter: Optional[SignSegmenter] = None
+
+    if yolo_model_path:
+        detector = YoloTrafficSignDetector(yolo_model_path, confidence_threshold=yolo_conf)
+        detections = detector.detect(image)
+    else:
+        detections = []
+
+    if not detections:
+        detections = []
+
+    if detections:
+        for detection in detections:
+            roi = crop_roi(image, detection.bbox)
+            left, top, _, _ = detection.bbox
+
+            ocr_variants = [("detector_roi", roi, 0, 0, None, None)]
+            if use_segmentation and should_segment_detection(roi, detection.label):
+                if segmenter is None:
+                    segmenter = SignSegmenter(
+                        backend=segmentation_backend,
+                        yolo_seg_model_path=yolo_seg_model_path,
+                    )
+                segmentation = segmenter.segment(roi)
+                refined = refine_segmented_roi(roi, segmentation)
+                for variant in refined.variants:
+                    ocr_variants.append(
+                        (
+                            variant.name,
+                            variant.image,
+                            variant.offset[0],
+                            variant.offset[1],
+                            segmentation.backend,
+                            segmentation.confidence,
+                        )
+                    )
+
+            for roi_variant, variant_image, offset_x, offset_y, seg_backend, seg_conf in ocr_variants:
+                roi_items = _retag_ocr_items(run_ocr_for_variant(ocr_engine, variant_image, fast_mode), roi_variant)
+                raw_items.extend(
+                    _roi_items_to_dicts(
+                        roi_items,
+                        left=left + offset_x,
+                        top=top + offset_y,
+                        detection_label=detection.label,
+                        detection_confidence=detection.confidence,
+                        roi_variant=roi_variant,
+                        segmentation_backend=seg_backend,
+                        segmentation_confidence=seg_conf,
+                    )
+                )
+
+    if not raw_items:
+        full_image_items = _retag_ocr_items(run_ocr_for_variant(ocr_engine, image, fast_mode), "full_image")
+        raw_items.extend(_roi_items_to_dicts(full_image_items, roi_variant="full_image"))
+        if use_segmentation:
+            if segmenter is None:
+                segmenter = SignSegmenter(
+                    backend=segmentation_backend,
+                    yolo_seg_model_path=yolo_seg_model_path,
+                )
+            segmentation = segmenter.segment(image)
+            refined = refine_segmented_roi(image, segmentation)
+            for variant in refined.variants:
+                roi_items = _retag_ocr_items(run_ocr_for_variant(ocr_engine, variant.image, fast_mode), variant.name)
+                raw_items.extend(
+                    _roi_items_to_dicts(
+                        roi_items,
+                        left=variant.offset[0],
+                        top=variant.offset[1],
+                        roi_variant=variant.name,
+                        segmentation_backend=segmentation.backend,
+                        segmentation_confidence=segmentation.confidence,
+                    )
+                )
+
+    return raw_items
+
+
+def build_output(raw_items: List[Dict[str, object]], extra_terms: Optional[List[str]] = None) -> Dict[str, object]:
+    processed: StructuredTextResult = structure_guide_sign_text(raw_items, extra_terms=extra_terms)
+    return {
+        "raw_ocr": processed.raw_ocr,
+        "cleaned_text": processed.cleaned_text,
+        "structured_output": processed.structured_output,
+        "structured_entries": processed.structured_entries,
+        "rejected_ocr_noise": processed.rejected_ocr_noise,
+        "ocr_failed": len(processed.raw_ocr) == 0,
+    }
+
+
+def run_pipeline(
+    image_path: str,
+    output_dir: str,
+    yolo_model_path: Optional[str] = None,
+    yolo_conf: float = 0.25,
+    ocr_det_model_dir: Optional[str] = None,
+    ocr_rec_model_dir: Optional[str] = None,
+    ocr_cls_model_dir: Optional[str] = None,
+    extra_terms: Optional[List[str]] = None,
+    ocr_langs: Optional[List[str]] = None,
+    use_segmentation: bool = True,
+    segmentation_backend: str = DEFAULT_SEGMENTATION_BACKEND,
+    yolo_seg_model_path: Optional[str] = None,
+    fast_mode: bool = True,
+) -> Dict[str, object]:
+    output_path = ensure_dir(output_dir)
+    ocr_engine = PaddleGuideSignOCR(
+        use_angle_cls=False,
+        lang=(ocr_langs[0] if ocr_langs else "en"),
+        langs=parse_ocr_langs(ocr_langs),
+        det_model_dir=ocr_det_model_dir,
+        rec_model_dir=ocr_rec_model_dir,
+        cls_model_dir=ocr_cls_model_dir,
+    )
+
+    raw_items = collect_ocr_candidates(
+        image_path,
+        yolo_model_path,
+        yolo_conf,
+        ocr_engine,
+        use_segmentation=use_segmentation,
+        segmentation_backend=segmentation_backend,
+        yolo_seg_model_path=yolo_seg_model_path,
+        fast_mode=fast_mode,
+    )
+    result = build_output(raw_items, extra_terms=extra_terms)
+
+    result_path = output_path / f"{Path(image_path).stem}_ocr_primary.json"
+    with open(result_path, "w", encoding="utf-8") as handle:
+        json.dump(result, handle, indent=2, ensure_ascii=False)
+    result["result_path"] = str(result_path)
+    return result
+
+
+def list_input_images(folder: str | Path) -> List[Path]:
+    folder_path = Path(folder)
+    return sorted(
+        path for path in folder_path.iterdir()
+        if path.is_file() and path.suffix.lower() in SUPPORTED_IMAGE_SUFFIXES
+    )
+
+
+def run_batch_pipeline(
+    input_dir: str,
+    output_dir: str,
+    yolo_model_path: Optional[str] = None,
+    yolo_conf: float = 0.25,
+    ocr_det_model_dir: Optional[str] = None,
+    ocr_rec_model_dir: Optional[str] = None,
+    ocr_cls_model_dir: Optional[str] = None,
+    extra_terms: Optional[List[str]] = None,
+    ocr_langs: Optional[List[str]] = None,
+    use_segmentation: bool = True,
+    segmentation_backend: str = DEFAULT_SEGMENTATION_BACKEND,
+    yolo_seg_model_path: Optional[str] = None,
+    fast_mode: bool = True,
+) -> Dict[str, object]:
+    image_paths = list_input_images(input_dir)
+    if not image_paths:
+        raise FileNotFoundError(f"No supported image files found in: {input_dir}")
+
+    summary_output_dir = ensure_dir(output_dir)
+    batch_results: List[Dict[str, object]] = []
+
+    for image_path in image_paths:
+        result = run_pipeline(
+            image_path=str(image_path),
+            output_dir=str(summary_output_dir),
+            yolo_model_path=yolo_model_path,
+            yolo_conf=yolo_conf,
+            ocr_det_model_dir=ocr_det_model_dir,
+            ocr_rec_model_dir=ocr_rec_model_dir,
+            ocr_cls_model_dir=ocr_cls_model_dir,
+            extra_terms=extra_terms,
+            ocr_langs=ocr_langs,
+            use_segmentation=use_segmentation,
+            segmentation_backend=segmentation_backend,
+            yolo_seg_model_path=yolo_seg_model_path,
+            fast_mode=fast_mode,
+        )
+        batch_results.append(
+            {
+                "image": str(image_path),
+                "result_path": result["result_path"],
+                "ocr_failed": result["ocr_failed"],
+                "structured_output": result["structured_output"],
+                "structured_entries": result["structured_entries"],
+                "raw_item_count": len(result["raw_ocr"]),
+            }
+        )
+
+    summary = {
+        "input_dir": str(Path(input_dir).resolve()),
+        "total_images": len(batch_results),
+        "successful_images": sum(not item["ocr_failed"] for item in batch_results),
+        "failed_images": sum(item["ocr_failed"] for item in batch_results),
+        "results": batch_results,
+    }
+
+    summary_path = summary_output_dir / "batch_summary.json"
+    with open(summary_path, "w", encoding="utf-8") as handle:
+        json.dump(summary, handle, indent=2, ensure_ascii=False)
+    summary["summary_path"] = str(summary_path)
+    return summary
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="OCR-primary traffic guide sign recognition with PaddleOCR.")
+    parser.add_argument("--image", type=str, default=str(DEFAULT_IMAGE_PATH), help="Path to the input image.")
+    parser.add_argument("--input-dir", type=str, default="", help="Optional directory of images for batch processing.")
+    parser.add_argument("--output-dir", type=str, default=str(DEFAULT_OUTPUT_DIR), help="Directory for OCR outputs.")
+    parser.add_argument("--yolo-model", type=str, default=(str(DEFAULT_YOLO_MODEL) if DEFAULT_YOLO_MODEL.exists() else ""), help="Optional YOLO detector for ROI cropping.")
+    parser.add_argument("--yolo-conf", type=float, default=0.25, help="YOLO detection confidence threshold.")
+    parser.add_argument("--ocr-det-model-dir", type=str, default=str(DEFAULT_OCR_DET_DIR), help="Optional PaddleOCR detection model directory.")
+    parser.add_argument("--ocr-rec-model-dir", type=str, default="", help="Optional PaddleOCR recognition model directory.")
+    parser.add_argument("--ocr-cls-model-dir", type=str, default=str(DEFAULT_OCR_CLS_DIR), help="Optional PaddleOCR classifier model directory.")
+    parser.add_argument("--ocr-langs", nargs="*", default=["en"], help="OCR languages to try, e.g. en hi ch pa.")
+    parser.add_argument("--extra-terms", nargs="*", default=None, help="Optional extra guide-sign terms for fuzzy correction.")
+    parser.add_argument("--disable-segmentation", action="store_true", help="Disable segmentation-assisted ROI refinement before OCR.")
+    parser.add_argument("--segmentation-backend", type=str, default=DEFAULT_SEGMENTATION_BACKEND, choices=["classical", "auto", "maskrcnn", "yolov8-seg"], help="Segmentation backend to use for ROI refinement.")
+    parser.add_argument("--yolo-seg-model", type=str, default="", help="Optional YOLOv8 segmentation model path.")
+    parser.add_argument("--accurate-mode", action="store_true", help="Use slower multi-variant OCR for maximum recall.")
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    yolo_model = args.yolo_model if args.yolo_model else None
+    if args.input_dir:
+        summary = run_batch_pipeline(
+            input_dir=args.input_dir,
+            output_dir=args.output_dir,
+            yolo_model_path=yolo_model,
+            yolo_conf=args.yolo_conf,
+            ocr_det_model_dir=args.ocr_det_model_dir,
+            ocr_rec_model_dir=(args.ocr_rec_model_dir or None),
+            ocr_cls_model_dir=args.ocr_cls_model_dir,
+            extra_terms=args.extra_terms,
+            ocr_langs=parse_ocr_langs(args.ocr_langs),
+            use_segmentation=not args.disable_segmentation,
+            segmentation_backend=args.segmentation_backend,
+            yolo_seg_model_path=(args.yolo_seg_model or None),
+            fast_mode=not args.accurate_mode,
+        )
+        print("\n[BATCH SUMMARY]")
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
+        return
+
+    result = run_pipeline(
+        image_path=args.image,
+        output_dir=args.output_dir,
+        yolo_model_path=yolo_model,
+        yolo_conf=args.yolo_conf,
+        ocr_det_model_dir=args.ocr_det_model_dir,
+        ocr_rec_model_dir=(args.ocr_rec_model_dir or None),
+        ocr_cls_model_dir=args.ocr_cls_model_dir,
+        extra_terms=args.extra_terms,
+        ocr_langs=parse_ocr_langs(args.ocr_langs),
+        use_segmentation=not args.disable_segmentation,
+        segmentation_backend=args.segmentation_backend,
+        yolo_seg_model_path=(args.yolo_seg_model or None),
+        fast_mode=not args.accurate_mode,
+    )
+
+    print("\n[RAW OCR]")
+    print(json.dumps(result["raw_ocr"], indent=2, ensure_ascii=False))
+
+    print("\n[CLEANED TEXT]")
+    print(json.dumps(result["cleaned_text"], indent=2, ensure_ascii=False))
+
+    print("\n[STRUCTURED OUTPUT]")
+    print(result["structured_output"])
+
+    print("\n[STRUCTURED ENTRIES]")
+    print(json.dumps(result["structured_entries"], indent=2, ensure_ascii=False))
+
+    if result["ocr_failed"]:
+        print("\n[INFO] OCR failed completely. No CNN fallback is configured in this OCR-primary pipeline.")
+
+
+if __name__ == "__main__":
+    main()

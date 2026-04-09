@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.DS_Store
 
 # C extensions
 *.so
@@ -135,5 +136,19 @@ data/*
 *.jpg
 *.jpeg
 *.h5
+
+# ML project ignores
+outputs/
+models/*.csv 
+results/*.csv
+.paddlex_cache*/
+.tmp*/
+.paddlex_cache*/
+*.rar
+frozen_east_text_detection*
+*.pb
+*.tar.gz
+*.exe
+*.ipynb_checkpoints/
 
 
